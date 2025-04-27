@@ -1,0 +1,52 @@
+@startuml STCP_Architecture
+!theme plain
+
+title STCP Conceptual Architecture
+
+cloud "DID/VC Infrastructure\n(Registries, Issuers, Verifiers)" as DVC_Infra
+
+node "BeSEnvironment" as BeSEnv {
+  component "STCP Agent (Plugin A)" as AgentA {
+    artifact "Security Tool A" as ToolA
+  }
+  component "STCP Agent (Plugin B)" as AgentB {
+    artifact "Security Tool B" as ToolB
+  }
+  component "..." as AgentN
+  database "Local Agent Registry\n(Optional Discovery)" as LocalRegistry
+
+  AgentA -> ToolA : Wraps / Executes
+  AgentB -> ToolB : Wraps / Executes
+
+  AgentA --> LocalRegistry : Registers (Optional)
+  AgentB --> LocalRegistry : Registers (Optional)
+}
+
+package "BeSPlaybook Execution Context" as PlaybookCtx {
+  component "STCP Orchestrator" as Orchestrator
+  artifact "BeSPlaybook Logic\n(Lifecycle Functions)" as PlaybookLogic
+}
+
+database "Datastore" as Datastore
+artifact "BeS-Schema\n(OSAR Definition)" as BeSSchema
+
+Orchestrator -> AgentA : STCP (JSON-RPC 2.0\nover stdio/HTTP)
+Orchestrator -> AgentB : STCP (JSON-RPC 2.0\nover stdio/HTTP)
+Orchestrator -> AgentN : STCP (...)
+
+Orchestrator <--> DVC_Infra : DID Resolution,\nVC Issuance/Verification
+AgentA <--> DVC_Infra : DID Resolution,\nVC Issuance/Verification
+AgentB <--> DVC_Infra : DID Resolution,\nVC Issuance/Verification
+
+PlaybookCtx -> Datastore : Publish OSAR + Attestation VC
+PlaybookLogic -> BeSSchema : Uses for OSAR Format
+
+Orchestrator -> LocalRegistry : Queries (Optional)
+
+BeSEnv -> AgentA : Lifecycle Mgmt\n(Install, Validate, etc.)
+BeSEnv -> AgentB : Lifecycle Mgmt\n(Install, Validate, etc.)
+BeSEnv -> AgentN : Lifecycle Mgmt\n(Install, Validate, etc.)
+
+PlaybookLogic -> Orchestrator : Drives
+
+@enduml

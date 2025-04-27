@@ -1,0 +1,74 @@
+@startuml STCP_Interaction_Flow
+!theme plain
+autonumber
+
+title STCP Interaction Flow (Simplified Playbook Execution)
+
+actor User
+participant "`besman` Utility" as Besman
+participant "BeSPlaybook" as Playbook
+participant "STCP Orchestrator" as Orchestrator
+participant "STCP Agent" as Agent
+participant "DID/VC Service" as DVCService
+participant "Datastore" as Datastore
+
+User -> Besman : Launch Playbook
+activate Besman
+Besman -> Playbook : __besman_launch()
+activate Playbook
+
+Playbook -> Playbook : __besman_init()
+Playbook -> Orchestrator : Discover/Configure Agents
+activate Orchestrator
+Orchestrator -> Agent : agent/discover
+activate Agent
+Agent --> Orchestrator : Response (Metadata)
+deactivate Agent
+Orchestrator -> Agent : agent/configure
+activate Agent
+Agent --> Orchestrator : Response (Config Status)
+deactivate Agent
+Orchestrator --> Playbook : Agents Ready
+deactivate Orchestrator
+
+Playbook -> Playbook : __besman_execute()
+loop Playbook Steps
+  Playbook -> Orchestrator : Execute Tool Action (Capability X, Args Y)
+  activate Orchestrator
+  Orchestrator -> Agent : agent/execute (Capability X, Args Y)
+  activate Agent
+  Agent -> Agent : Invoke Underlying Tool
+  Agent --> Orchestrator : Response (Results Z)
+  deactivate Agent
+  Orchestrator --> Playbook : Results Z Received
+  deactivate Orchestrator
+end
+
+Playbook -> Playbook : __besman_prepare()\n(Format OSAR using BeS-Schema)
+
+Playbook -> Playbook : __besman_publish()
+Playbook -> DVCService : Request OSAR Attestation VC
+activate DVCService
+DVCService --> Playbook : OSAR Attestation VC
+deactivate DVCService
+Playbook -> Datastore : Store OSAR + VC
+activate Datastore
+Datastore --> Playbook : Stored OK
+deactivate Datastore
+
+Playbook -> Playbook : __besman_cleanup()
+Playbook -> Orchestrator : Cleanup Agents
+activate Orchestrator
+Orchestrator -> Agent : agent/cleanup
+activate Agent
+Agent --> Orchestrator : Response (Cleanup Status)
+deactivate Agent
+Orchestrator --> Playbook : Cleanup Done
+deactivate Orchestrator
+
+Playbook --> Besman : Execution Complete
+deactivate Playbook
+Besman --> User : Playbook Finished
+deactivate Besman
+
+@enduml

@@ -68,61 +68,8 @@ The STCP architecture comprises two primary logical components:
 
 ### **2.3. Conceptual Architecture Diagram Description**
 
-*(This section describes the intended content of an architectural diagram)*
 
-@startuml STCP_Architecture
-!theme plain
-
-title STCP Conceptual Architecture
-
-cloud "DID/VC Infrastructure\n(Registries, Issuers, Verifiers)" as DVC_Infra
-
-node "BeSEnvironment" as BeSEnv {
-  component "STCP Agent (Plugin A)" as AgentA {
-    artifact "Security Tool A" as ToolA
-  }
-  component "STCP Agent (Plugin B)" as AgentB {
-    artifact "Security Tool B" as ToolB
-  }
-  component "..." as AgentN
-  database "Local Agent Registry\n(Optional Discovery)" as LocalRegistry
-
-  AgentA -> ToolA : Wraps / Executes
-  AgentB -> ToolB : Wraps / Executes
-
-  AgentA --> LocalRegistry : Registers (Optional)
-  AgentB --> LocalRegistry : Registers (Optional)
-}
-
-package "BeSPlaybook Execution Context" as PlaybookCtx {
-  component "STCP Orchestrator" as Orchestrator
-  artifact "BeSPlaybook Logic\n(Lifecycle Functions)" as PlaybookLogic
-}
-
-database "Datastore" as Datastore
-artifact "BeS-Schema\n(OSAR Definition)" as BeSSchema
-
-Orchestrator -> AgentA : STCP (JSON-RPC 2.0\nover stdio/HTTP)
-Orchestrator -> AgentB : STCP (JSON-RPC 2.0\nover stdio/HTTP)
-Orchestrator -> AgentN : STCP (...)
-
-Orchestrator <--> DVC_Infra : DID Resolution,\nVC Issuance/Verification
-AgentA <--> DVC_Infra : DID Resolution,\nVC Issuance/Verification
-AgentB <--> DVC_Infra : DID Resolution,\nVC Issuance/Verification
-
-PlaybookCtx -> Datastore : Publish OSAR + Attestation VC
-PlaybookLogic -> BeSSchema : Uses for OSAR Format
-
-Orchestrator -> LocalRegistry : Queries (Optional)
-
-BeSEnv -> AgentA : Lifecycle Mgmt\n(Install, Validate, etc.)
-BeSEnv -> AgentB : Lifecycle Mgmt\n(Install, Validate, etc.)
-BeSEnv -> AgentN : Lifecycle Mgmt\n(Install, Validate, etc.)
-
-PlaybookLogic -> Orchestrator : Drives
-
-@enduml
-
+![STCP Component Architecture](https://github.com/Be-Secure/STCP/blob/main/images/STCPComponentArchitecture.png)
 
 A diagram illustrating the STCP architecture would show the following components and interactions:
 
@@ -355,8 +302,8 @@ The end-to-end flow of executing a security tool via STCP within the Be-Secure f
 
 ### **5.5. Interaction Flow Diagram Description (Simplified Playbook Execution)**
 
-*(This section describes the intended content of an interaction or sequence diagram)*
 
+![STCP Interaction Flow Diagram](https://github.com/Be-Secure/STCP/blob/main/images/STCPInteractionFlow.png)
 A diagram illustrating the typical STCP interaction flow during a playbook execution would show vertical lifelines for the key actors and sequential message exchanges:
 
 * **Actors/Lifelines:** User, besman Utility, BeSPlaybook (showing internal calls to \_\_besman\_init, \_\_besman\_execute, \_\_besman\_prepare, \_\_besman\_publish, \_\_besman\_cleanup), STCP Orchestrator, STCP Agent (representing one tool), DID/VC Service, Datastore.  

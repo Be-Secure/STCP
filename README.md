@@ -24,7 +24,7 @@ The core concepts of STCP are:
 ### **1.3. Key Terminology**
 
 * **BeSEnvironment (Be-Secure Environment):** A configured environment containing a specific set of security tools and utilities, tailored for tasks like Red Teaming (RT) or Blue Teaming (BT). Managed via lifecycle functions (\_\_besman\_install, \_\_besman\_uninstall, etc.).  
-* **BeSPlaybook (Be-Secure Playbook):** A scripted workflow defining the steps for a security assessment or task. Managed via lifecycle functions (\_\_besman\_init, \_\_besman\_execute, etc.) and executed by the besman utility \[User Query\].  
+* **BeSPlaybook (Be-Secure Playbook):** A scripted workflow defining the steps for a security assessment or task. Managed via lifecycle functions (\_\_besman\_init, \_\_besman\_execute, etc.) and executed by the besman utility.  
 * **BeSLab (Be-Secure Lab):** A conceptual or physical instance of a security assessment environment, typically comprising one or more BeSEnvironments, associated BeSPlaybooks, and potentially leveraging STCP Agents. Can be defined by a BeSLab blueprint.  
 * **BeSLab Plugin:** A software component, often wrapping a security tool, designed to integrate into the BeSLab ecosystem. In this specification, STCP-compliant plugins are referred to as STCP Agents.  
 * **STCP Agent:** A BeSLab Plugin that implements the server-side STCP interface, exposing security tool capabilities.  
